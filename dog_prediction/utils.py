@@ -1,9 +1,13 @@
 import cv2
 import numpy as np
-from keras import Sequential
-from keras.applications.resnet50 import ResNet50
-from keras.layers import Dense, GlobalAveragePooling2D
-from keras.preprocessing import image
+from tensorflow import keras
+from tensorflow.keras import Sequential
+from tensorflow.keras.applications.resnet50 import ResNet50
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input
+from tensorflow.keras.applications.resnet50 import preprocess_input as resnet50_preprocess_input
+import traceback
 
 # define ResNet50 model
 ResNet50_model = ResNet50(weights='imagenet')
@@ -150,7 +154,7 @@ Inception_model.add(Dense(133, activation='softmax'))
 Inception_model.compile(optimizer="rmsprop", loss="categorical_crossentropy", metrics=['accuracy'])
 Inception_model.load_weights("saved_models/weights.best.Inception.hdf5")
 
-from keras.applications.resnet50 import preprocess_input
+
 
 
 def face_detector(img_path):
@@ -171,7 +175,7 @@ def path_to_tensor(img_path):
 
 def ResNet50_predict_labels(img_path):
     # returns prediction vector for image located at img_path
-    img = preprocess_input(path_to_tensor(img_path))
+    img = resnet50_preprocess_input(path_to_tensor(img_path))
     return np.argmax(ResNet50_model.predict(img))
 
 
@@ -181,7 +185,6 @@ def dog_detector(img_path):
 
 
 def extract_InceptionV3(tensor):
-    from keras.applications.inception_v3 import InceptionV3, preprocess_input
     return InceptionV3(weights='imagenet', include_top=False).predict(preprocess_input(tensor))
 
 
@@ -195,10 +198,11 @@ def Inception_predict_breed(img_path):
 
 
 def predict_breed(file_path):
+    print(f"Working with file at {file_path}")
     try:
         detected_breed = Inception_predict_breed(file_path)
         detected_breed = detected_breed.split('.')[1].replace('_', ' ')
-    except:
+    except Exception as e:
         return "Could not make prediction, are you sure this is the path to an image?"
     if dog_detector(file_path):
         output_string = "A dog of breed " + detected_breed + " was detected"
@@ -206,4 +210,4 @@ def predict_breed(file_path):
         output_string = "A human looking like a " + detected_breed + " was detected"
     else:
         raise Exception("What is that?")
-    print(output_string)
+    return output_string

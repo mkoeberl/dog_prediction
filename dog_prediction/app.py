@@ -2,6 +2,7 @@ from pathlib import Path
 
 from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename, escape
+from dog_prediction import utils
 
 app = Flask(__name__,)
 
@@ -50,7 +51,7 @@ def upload():
 @app.route('/predict/<filename>')
 def predict(filename):
     filepath = 'http://127.0.0.1:5000/uploads/' + filename
-    return render_template("predict.html", filepath=filepath)
+    return render_template("predict.html", filepath=filepath, text=utils.predict_breed(app.config['UPLOAD_FOLDER']+"/"+filename))
 
 @app.route('/uploads/<filename>')
 def send_file(filename):
@@ -58,4 +59,4 @@ def send_file(filename):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False, threaded=False)
