@@ -148,14 +148,15 @@ dog_names = ['ages/train/001.Affenpinscher',
 
 face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
 
-Inception_model = Sequential()
-Inception_model.add(GlobalAveragePooling2D(input_shape=(5, 5, 2048)))
-Inception_model.add(Dense(133, activation='softmax'))
-Inception_model.compile(optimizer="rmsprop", loss="categorical_crossentropy", metrics=['accuracy'])
-Inception_model.load_weights("saved_models/weights.best.Inception.hdf5")
+def get_inception_model():
+    model = Sequential()
+    model.add(GlobalAveragePooling2D(input_shape=(5, 5, 2048)))
+    model.add(Dense(133, activation='softmax'))
+    model.compile(optimizer="rmsprop", loss="categorical_crossentropy", metrics=['accuracy'])
+    model.load_weights("saved_models/weights.best.Inception.hdf5")
+    return model
 
-
-
+Inception_model = get_inception_model()
 
 def face_detector(img_path):
     img = cv2.imread(img_path)
@@ -204,10 +205,12 @@ def predict_breed(file_path):
         detected_breed = detected_breed.split('.')[1].replace('_', ' ')
     except Exception as e:
         return "Could not make prediction, are you sure this is the path to an image?"
+    print(detected_breed)
     if dog_detector(file_path):
-        output_string = "A dog of breed " + detected_breed + " was detected"
+        output_string = "A dog of breed " + detected_breed + " was detected."
     elif face_detector(file_path):
-        output_string = "A human looking like a " + detected_breed + " was detected"
+        output_string = "A human looking like a " + detected_breed + " was detected."
     else:
-        raise Exception("What is that?")
+        output_string = "To us, this neither looks like a dog nor a human. Anyway if it is a dog, most likely it is" \
+                        " a "+ detected_breed +"."
     return output_string
