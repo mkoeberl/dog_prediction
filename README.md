@@ -64,5 +64,15 @@ this seems quite respectable.
 - `pillow` for image file handling
 - and the usual other suspects (see `requirements.txt` for details) ;)
 
-## 
+## What's in it
+The following directories and files are included:
+- dog_prediction
+  - haarcascades: Features for face recognition
+  - saved_models: Model for dog breed prediction
+  - templates:
+    - hello.html: Basic HTML layout and image upload form
+    - predict.html: Show image and output of model
+  - app.py: Flask app
+  - dog_app.ipynb: Notebook in which the models were developed, won't work when cloned as files are missing but contains explanations
+  - utils.py: Utility functions used in app (mostly copied from notebook)
 
